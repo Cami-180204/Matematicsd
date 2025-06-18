@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Graficador de Desigualdades con Plotly</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #fff8e1;
+      padding: 20px;
+    }
+    input {
+      padding: 8px;
+      margin: 10px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #d50000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #plot {
+      width: 100%;
+      height: 600px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Graficador de Desigualdades (Estilo Python)</h2>
+  <p>Formato: y ≤ mx + b</p>
+  <input id="ineq1" placeholder="Ej: y <= 2.5x + 5">
+  <br>
+  <button onclick="graficar()">Graficar región de solución</button>
+
+  <div id="plot"></div>
+
+  <script>
+    function parseInequality(str) {
+      let clean = str.replace(/\s/g, '');
+      const match = clean.match(/y([<>]=?)(-?\d*\.?\d*)x([+-]\d*\.?\d*)/);
+      if (!match) return null;
+
+      const op = match[1];
+      const m = parseFloat(match[2] || 1);
+      const b = parseFloat(match[3]);
+
+      return { m, b, op };
+    }
+
+    function graficar() {
+      const ineq = parseInequality(document.getElementById("ineq1").value);
+      if (!ineq) {
+        alert("Ingresa una desigualdad válida como: y <= 2.5x + 5");
+        return;
+      }
+
+      const x = [], yLinea = [], yRelleno = [];
+      for (let i = 0; i <= 10; i += 0.1) {
+        x.push(i);
+        const y = ineq.m * i + ineq.b;
+        yLinea.push(y);
+        yRelleno.push(ineq.op.includes('<=') || ineq.op.includes('<') ? 25 : 5); // límite vertical
+      }
+
+      const linea = {
+        x: x,
+        y: yLinea,
+        mode: 'lines',
+        name: 'Línea de frontera',
+        line: { color: 'red', width: 2 }
+      };
+
+      const relleno = {
+        x: [...x, ...x.slice().reverse()],
+        y: [...yLinea, ...yRelleno.reverse()],
+        fill: 'toself',
+        fillcolor: 'rgba(0, 0, 255, 0.8)',
+        type: 'scatter',
+        line: { color: 'transparent' },
+        name: 'Región de solución'
+      };
+
+      Plotly.newPlot('plot', [relleno, linea], {
+        xaxis: { range: [0, 10] },
+        yaxis: { range: [5, 25] },
+        title: 'Zona factible',
+        margin: { t: 30 }
+      });
+    }
+  </script>
+
+</body>
+</html>
