@@ -144,22 +144,17 @@ function border(arr){
     ctx.strokeStyle=o.color;
     ctx.lineWidth=2;
     ctx.beginPath();
-    // --- Caso: línea vertical (b ≈ 0) => x = constante ---
     if(Math.abs(o.b) < 1e-9){
-      const xConst = (-o.c) / o.a; // a·x + c = 0 ⇒ x = -c/a
+      const xConst = (-o.c) / o.a;
       const px = tp(xConst,0).x;
       ctx.moveTo(px,0);
       ctx.lineTo(px,cv.height);
-    }
-    // --- Caso: línea horizontal (a ≈ 0) => y = constante ---
-    else if(Math.abs(o.a) < 1e-9){
-      const yConst = (-o.c) / o.b; // b·y + c = 0 ⇒ y = -c/b
+    } else if(Math.abs(o.a) < 1e-9){
+      const yConst = (-o.c) / o.b;
       const py = tp(0,yConst).y;
       ctx.moveTo(0,py);
       ctx.lineTo(cv.width,py);
-    }
-    // --- Caso general (línea oblicua) ---
-    else {
+    } else {
       let first=true;
       for(let px=0;px<cv.width;px++){
         const x=tc(px,0).x;
@@ -170,11 +165,6 @@ function border(arr){
       }
     }
     ctx.stroke();
-    ctx.fillStyle=o.color;
-    ctx.font='12px Arial';
-    ctx.fillText(o.raw,10+Math.random()*40,15+Math.random()*20);
-  });
-}
     ctx.fillStyle=o.color;
     ctx.font='12px Arial';
     ctx.fillText(o.raw,10+Math.random()*40,15+Math.random()*20);
